@@ -1,6 +1,7 @@
 package norswap.sigh;
 
 import norswap.sigh.ast.*;
+import norswap.sigh.bytecode.Null;
 import norswap.sigh.scopes.DeclarationContext;
 import norswap.sigh.scopes.DeclarationKind;
 import norswap.sigh.scopes.RootScope;
@@ -514,8 +515,12 @@ public final class SemanticAnalysis
                 r.set(0, FloatType.INSTANCE);
             else
                 r.error(arithmeticError(node, "Float", right), node);
-        else
-            r.error(arithmeticError(node, left, right), node);
+        ////////  ADDDING ARRAY
+        else if (left.equals(right)){
+            r.set(0, new ArrayType(((ArrayType) left).componentType));
+        }
+
+        else r.error(arithmeticError(node, left, right), node);
     }
 
     // ---------------------------------------------------------------------------------------------

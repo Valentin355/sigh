@@ -5,6 +5,7 @@ import norswap.sigh.scopes.DeclarationKind;
 import norswap.sigh.scopes.RootScope;
 import norswap.sigh.scopes.Scope;
 import norswap.sigh.scopes.SyntheticDeclarationNode;
+import norswap.sigh.types.ArrayType;
 import norswap.sigh.types.FloatType;
 import norswap.sigh.types.IntType;
 import norswap.sigh.types.StringType;
@@ -182,6 +183,12 @@ public final class Interpreter
         if (numeric)
             return numericOp(node, floating, (Number) left, (Number) right);
 
+        //Array operation
+        boolean IsArrayOperation = leftType.equals(rightType);
+        if (IsArrayOperation){
+            return arrayOp(node, left, right);
+        }
+
         switch (node.operator) {
             case EQUALITY:
                 return  leftType.isPrimitive() ? left.equals(right) : left == right;
@@ -191,6 +198,18 @@ public final class Interpreter
 
         throw new Error("should not reach here");
     }
+
+    // ---------------------------------------------------------------------------------------------
+    //Need to sum Array Here
+    private Object arrayOp(BinaryExpressionNode node, Object left, Object right){
+
+
+        return null;
+    }
+
+
+
+
 
     // ---------------------------------------------------------------------------------------------
 

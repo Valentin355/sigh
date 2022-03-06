@@ -13,7 +13,7 @@ public final class ArrayType extends Type
     }
 
     @Override public boolean equals (Object o) {
-        return this == o || o instanceof ArrayType && componentType.equals(o);
+        return this == o || o instanceof ArrayType && componentType.equals(((ArrayType) o).componentType);
     }
 
     @Override public int hashCode () {
