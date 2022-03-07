@@ -350,5 +350,11 @@ public final class InterpreterTests extends TestFixture {
 
     // ---------------------------------------------------------------------------------------------
 
+    @Test public void testArrayOperation()
+    {
+        //Need to modify print to be able to print array
+    }
+
+
     // NOTE(norswap): Not incredibly complete, but should cover the basics.
 }

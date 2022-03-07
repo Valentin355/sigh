@@ -301,4 +301,19 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
     }
 
     // ---------------------------------------------------------------------------------------------
+    //Test on array operation
+    @Test public void ArrayOperation()
+    {
+        //Test with + and *
+        successInput("var intArray: Int[][] = [[1,2], [3,4]]\n" +
+            "var sumArray: Int[][] = intArray + [[5, 6],[7, 8]]\n" +
+            "var sumArray2: Int[][] = sumArray * [[2, 2],[2, 2]]");
+
+        failureInputWith("var intArray: Int[][] = [[1,2], [3,4]]\n" +
+                "var sumArray: Int[][] = intArray + [[\"A\", \"B\"],[\"C\", \"D\"]]",
+            "Trying to add Int[][] with String[][]");
+
+    }
+    // ---------------------------------------------------------------------------------------------
+
 }
