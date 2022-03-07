@@ -205,7 +205,7 @@ public final class Interpreter
     //Need to sum Array Here
     private void arrayOp(BinaryExpressionNode node, Object[] left, Object[] right, Object[] result){
         //Check length and throw error if mismatch
-        if (left.length != right.length || result.length != right.length) throw new Error("Trying to use operator on array of different shape");
+        if (left.length != right.length || result.length != right.length) throw new Error("Trying to use operator on array of different length");
 
         for (int i = 0; i < left.length; i++){
 
@@ -221,7 +221,7 @@ public final class Interpreter
                 arrayOp(node, (Object[]) left[i], (Object[]) right[i], subResult);
                 result[i] = subResult;
             } //Error if what is in the array of different type (Object[] and Long)
-            else throw new Error("Trying to use operator on array of different type");
+            else throw new Error("Trying to use operator on array of different type (Should never reach here and should have been detected in semanticAnalysis)");
         }
     }
 
