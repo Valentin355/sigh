@@ -1,5 +1,5 @@
 // This file showcases every single syntactic feature in the language.
-
+/*
 fun array_add (a: Int[]): Int
 {
     fun add (a: Int, b: Int): Int {
@@ -59,8 +59,9 @@ fun sum_pair (pair: Pair): Int {
 validate5(sum_pair($Pair(2, 3)))
 
 fun use_array (array: Int[]) {}
-
+*/
 var intArray: Int[][] = [[1,2], [3,4]]
 var sumArray: Int[][] = intArray + [[5, 6],[7, 8]]
-var stringArray: String[] = []
-use_array([])
+var sumArray2: Int[][] = sumArray * [[2, 2],[2, 2]]
+//var stringArray: String[] = []
+//use_array([])

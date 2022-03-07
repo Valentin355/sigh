@@ -186,7 +186,9 @@ public final class Interpreter
         //Array operation
         boolean IsArrayOperation = leftType.equals(rightType);
         if (IsArrayOperation){
-            return arrayOp(node, left, right);
+            Object [] result = new Object[((Object[]) left).length];
+            arrayOp(node, (Object[]) left, (Object[]) right, result);
+            return result;
         }
 
         switch (node.operator) {
@@ -201,10 +203,26 @@ public final class Interpreter
 
     // ---------------------------------------------------------------------------------------------
     //Need to sum Array Here
-    private Object arrayOp(BinaryExpressionNode node, Object left, Object right){
+    private void arrayOp(BinaryExpressionNode node, Object[] left, Object[] right, Object[] result){
+        //Check length and throw error if mismatch
+        if (left.length != right.length || result.length != right.length) throw new Error("Trying to use operator on array of different shape");
 
+        for (int i = 0; i < left.length; i++){
 
-        return null;
+            boolean floating = left[i] instanceof Double || right[i] instanceof Double;
+            boolean numeric  = floating || left[i] instanceof Long;
+            //If number in, call numericOp and store it in result
+            if (numeric){
+                result[i] = numericOp(node, floating, (Number) left[i], (Number) right[i]);
+            }
+            //If contain an array type, reccursive called
+            else if (left[i] instanceof Object[] && right[i] instanceof Object[]){
+                Object[] subResult = new Object[((Object[]) left[i]).length];
+                arrayOp(node, (Object[]) left[i], (Object[]) right[i], subResult);
+                result[i] = subResult;
+            } //Error if what is in the array of different type (Object[] and Long)
+            else throw new Error("Trying to use operator on array of different type");
+        }
     }
 
 
