@@ -1,6 +1,7 @@
 package norswap.sigh.interpreter;
 
 import norswap.sigh.ast.*;
+import norswap.sigh.errors.ArrayLengthError;
 import norswap.sigh.scopes.DeclarationKind;
 import norswap.sigh.scopes.RootScope;
 import norswap.sigh.scopes.Scope;
@@ -184,7 +185,7 @@ public final class Interpreter
             return numericOp(node, floating, (Number) left, (Number) right);
 
         //Array operation
-        boolean IsArrayOperation = leftType.equals(rightType);
+        boolean IsArrayOperation = leftType instanceof ArrayType && rightType instanceof ArrayType && leftType.equals(rightType);
         if (IsArrayOperation){
             Object [] result = new Object[((Object[]) left).length];
             arrayOp(node, (Object[]) left, (Object[]) right, result);
@@ -205,15 +206,20 @@ public final class Interpreter
     //Need to sum Array Here
     private void arrayOp(BinaryExpressionNode node, Object[] left, Object[] right, Object[] result){
         //Check length and throw error if mismatch
-        if (left.length != right.length || result.length != right.length) throw new Error("Trying to use operator on array of different length");
+        if (left.length != right.length || result.length != right.length) throw new PassthroughException(
+            new ArrayLengthError("Trying to use operator on array/subarray of different length : Left is of length " + left.length + " and right of length " + right.length));
 
         for (int i = 0; i < left.length; i++){
+
 
             boolean floating = left[i] instanceof Double || right[i] instanceof Double;
             boolean numeric  = floating || left[i] instanceof Long;
             //If number in, call numericOp and store it in result
             if (numeric){
                 result[i] = numericOp(node, floating, (Number) left[i], (Number) right[i]);
+            }else if (node.operator == BinaryOperator.ADD
+                && (left[i] instanceof String || right[i] instanceof String)){
+                result[i] = (String) (left[i]) + (String) (right[i]);
             }
             //If contain an array type, reccursive called
             else if (left[i] instanceof Object[] && right[i] instanceof Object[]){
@@ -221,7 +227,7 @@ public final class Interpreter
                 arrayOp(node, (Object[]) left[i], (Object[]) right[i], subResult);
                 result[i] = subResult;
             } //Error if what is in the array of different type (Object[] and Long)
-            else throw new Error("Trying to use operator on array of different type (Should never reach here and should have been detected in semanticAnalysis)");
+            else throw new PassthroughException(new Error("Trying to use operator on array of different type (Should never reach here and should have been detected in semanticAnalysis)"));
         }
     }
 

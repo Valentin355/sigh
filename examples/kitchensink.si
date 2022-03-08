@@ -61,6 +61,7 @@ validate5(sum_pair($Pair(2, 3)))
 fun use_array (array: Int[]) {}
 */
 var intArray: Int[][] = [[1,2], [3,4]]
-var sumArray: Int[][] = intArray + [["A", "B"],["C", "D"]]
+var sumArray: Int[][] = intArray + [[4, 4],[1,1]]
+print("" + sumArray)
 //var stringArray: String[] = []
 //use_array([])

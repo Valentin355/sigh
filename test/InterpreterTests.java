@@ -6,6 +6,7 @@ import norswap.autumn.positions.LineMapString;
 import norswap.sigh.SemanticAnalysis;
 import norswap.sigh.SighGrammar;
 import norswap.sigh.ast.SighNode;
+import norswap.sigh.errors.ArrayLengthError;
 import norswap.sigh.interpreter.Interpreter;
 import norswap.sigh.interpreter.Null;
 import norswap.uranium.Reactor;
@@ -352,7 +353,22 @@ public final class InterpreterTests extends TestFixture {
 
     @Test public void testArrayOperation()
     {
-        //Need to modify print to be able to print array
+        rule = grammar.root;
+        check("var intArray: Int[][] = [[1,2], [3,4]]\n" +
+            "var sumArray: Int[][] = intArray + [[5, 6],[7, 8]]\n" +
+            "print(\"\" + sumArray)", null, "[[6, 8], [10, 12]]\n");
+
+        check("var stringArray: String[][] = [[\"a\",\"a\"], [\"a\",\"a\"]];" +
+            "var sumArray: String[][] = stringArray + [[\"b\", \"b\"],[\"b\", \"b\"]];" +
+            "print(\"\" + sumArray)", null, "[[ab, ab], [ab, ab]]\n");
+
+        //Need to change/create the error throwed so can catch it here but doesn't seem to work
+        /*
+        checkThrows("var intArray: Int[][] = [[1,2], [3,4, 5]]\n" +
+            "var sumArray: Int[][] = intArray + [[4, 4],[1]]\n" +
+            "print(\"\" + sumArray)", ArrayLengthError.class);
+        */
+
     }
 
 
