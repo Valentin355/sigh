@@ -184,13 +184,6 @@ public final class Interpreter
         if (numeric)
             return numericOp(node, floating, (Number) left, (Number) right);
 
-        //Array operation
-        boolean IsArrayOperation = leftType instanceof ArrayType && rightType instanceof ArrayType && leftType.equals(rightType);
-        if (IsArrayOperation){
-            Object [] result = new Object[((Object[]) left).length];
-            arrayOp(node, (Object[]) left, (Object[]) right, result);
-            return result;
-        }
 
         switch (node.operator) {
             case EQUALITY:
@@ -198,7 +191,13 @@ public final class Interpreter
             case NOT_EQUALS:
                 return  leftType.isPrimitive() ? !left.equals(right) : left != right;
         }
-
+        //Array operation
+        boolean IsArrayOperation = leftType instanceof ArrayType && rightType instanceof ArrayType && leftType.equals(rightType);
+        if (IsArrayOperation){
+            Object [] result = new Object[((Object[]) left).length];
+            arrayOp(node, (Object[]) left, (Object[]) right, result);
+            return result;
+        }
         throw new Error("should not reach here");
     }
 
@@ -207,7 +206,8 @@ public final class Interpreter
     private void arrayOp(BinaryExpressionNode node, Object[] left, Object[] right, Object[] result){
         //Check length and throw error if mismatch
         if (left.length != right.length || result.length != right.length) throw new PassthroughException(
-            new ArrayLengthError("Trying to use operator on array/subarray of different length : Left is of length " + left.length + " and right of length " + right.length));
+            new ArrayLengthError("Trying to use operator on array/subarray of different length : Left is of length "
+                + left.length + " and right of length " + right.length));
 
         for (int i = 0; i < left.length; i++){
 
@@ -227,7 +227,8 @@ public final class Interpreter
                 arrayOp(node, (Object[]) left[i], (Object[]) right[i], subResult);
                 result[i] = subResult;
             } //Error if what is in the array of different type (Object[] and Long)
-            else throw new PassthroughException(new Error("Trying to use operator on array of different type (Should never reach here and should have been detected in semanticAnalysis)"));
+            else throw new PassthroughException(new Error("Trying to use operator on array of different type" +
+                    "(Should never reach here and should have been detected in semanticAnalysis)"));
         }
     }
 
