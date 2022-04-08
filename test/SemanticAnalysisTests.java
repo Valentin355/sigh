@@ -318,6 +318,10 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
             "var sumArray: Int[][] = intArray + [[5, 6],[7, 8]] + [[3, 5],[4, 9]]\n" +
             "var sumArray2: Int[][] = sumArray * [[2, 2],[2, 2]]");
 
+        successInput("var intArray: Float[][][] = [[[1,2], [3,4]], [[1,2], [3,4]]]\n" +
+            "var sumArray: Float[][] = intArray[0] + [[4, 4],[1,1]]");
+
+
         failureInputWith("var intArray: Int[][] = [[1,2], [3,4]]\n" +
                 "var sumArray: Int[][] = intArray + [[\"A\", \"B\"],[\"C\", \"D\"]]",
             "Trying to add Int[][] with String[][]");

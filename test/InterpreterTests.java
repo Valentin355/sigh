@@ -362,6 +362,10 @@ public final class InterpreterTests extends TestFixture {
             "var sumArray: String[][] = stringArray + [[\"b\", \"b\"],[\"b\", \"b\"]];" +
             "print(\"\" + sumArray)", null, "[[ab, ab], [ab, ab]]\n");
 
+        check("var intArray: Float[][][] = [[[1,2], [3,4]], [[1,2], [3,4]]]\n" +
+            "var sumArray: Float[][] = intArray[0] + [[4, 4],[1,1]]\n" +
+            "print(\"\" + sumArray)", null, "[[5, 6], [4, 5]]\n");
+
         //Error ArrayLength is throwned in the Interpreter
         //but a NoStackException is thrown after
         //Need to find a fix
