@@ -62,7 +62,7 @@ fun use_array (array: Int[]) {}
 */
 
 var intArray: Float[][][] = [[[1,2], [3,4]], [[1,2], [3,4]]]
-var sumArray: Float[][] = intArray[1:] + [[4, 4],[1,1]]
+var sumArray: Float[][] = intArray[1:2] + [1,1]
 print("" + sumArray)
 
 

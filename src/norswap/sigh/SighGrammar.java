@@ -68,6 +68,20 @@ public class SighGrammar extends Grammar
         .push($ -> new IntLiteralNode($.span(), Long.parseLong($.str())))
         .word();
 
+    public rule arrayAccess =
+        seq(opt(integer), COLON, opt(integer)).push($ -> {
+            String[] value = $.str().split(":");
+            if (value.length == 0){
+                return new ArraySelectionNode($.span(), null, null);
+            } else if (value.length == 1 && $.str().charAt(0) == ':'){
+                return new ArraySelectionNode($.span(), null, $.$[0]);
+            } else if (value.length == 1){
+                return new ArraySelectionNode($.span(), $.$[0], null);
+            } else {
+                return new ArraySelectionNode($.span(), $.$[0], $.$[1]);
+            }
+        });
+
     public rule floating =
         seq(number, '.', digit.at_least(1))
         .push($ -> new FloatLiteralNode($.span(), Double.parseDouble($.str())))
@@ -117,6 +131,7 @@ public class SighGrammar extends Grammar
         .push($ -> new ArrayLiteralNode($.span(), $.$[0]));
 
     public rule basic_expression = choice(
+        arrayAccess,
         constructor,
         reference,
         floating,
