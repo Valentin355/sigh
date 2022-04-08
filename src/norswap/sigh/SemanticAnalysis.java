@@ -501,6 +501,18 @@ public final class SemanticAnalysis
 
     // ---------------------------------------------------------------------------------------------
 
+    private Type arrayOfType(Type type, int dim){
+        Type array = new ArrayType(type);
+        dim--;
+        while(dim > 0){
+            array = new ArrayType(array);
+            dim--;
+        }
+        return array;
+    }
+
+
+
     private void binaryArithmetic (Rule r, BinaryExpressionNode node, Type left, Type right)
     {
         if (left instanceof IntType)
@@ -516,9 +528,59 @@ public final class SemanticAnalysis
             else
                 r.error(arithmeticError(node, "Float", right), node);
         ////////  ADDDING ARRAY
+        else if (left instanceof ArrayType && right instanceof ArrayType){
+            String leftType = left.name(); String rightType = right.name();
+            int dimLeft = 1; int dimRight = 1;
+
+
+            Type leftComponent = ((ArrayType) left).componentType;
+            Type rightComponent = ((ArrayType) right).componentType;
+
+            //Getting dimension and component type
+            while (leftComponent instanceof ArrayType){
+                dimLeft++;
+                leftComponent = ((ArrayType) leftComponent).componentType;
+            }
+
+            while (rightComponent instanceof ArrayType){
+                dimRight++;
+                rightComponent = ((ArrayType) rightComponent).componentType;
+            }
+
+
+            if (dimLeft != dimRight){
+                r.error(arithmeticError(node, left, right), node);
+                return;
+            }
+
+
+
+            if (leftComponent instanceof IntType)
+                if (rightComponent instanceof IntType)
+                    r.set(0, arrayOfType(IntType.INSTANCE, dimLeft));
+            else if (rightComponent instanceof FloatType)
+                r.set(0, arrayOfType(FloatType.INSTANCE, dimLeft));
+                else
+                    r.error(arithmeticError(node, leftType, right), node);
+            else if (leftComponent instanceof FloatType)
+                if (rightComponent instanceof IntType || rightComponent instanceof FloatType)
+                    r.set(0, arrayOfType(FloatType.INSTANCE, dimLeft));
+                else
+                    r.error(arithmeticError(node, "Float", right), node);
+            else if (leftComponent instanceof StringType && rightComponent instanceof StringType){
+                r.set(0, arrayOfType(StringType.INSTANCE, dimLeft));
+            }
+
+        }
+
+        /*
         else if (left.equals(right)){
             r.set(0, new ArrayType(((ArrayType) left).componentType));
         }
+        */
+
+
+
 
         else r.error(arithmeticError(node, left, right), node);
     }

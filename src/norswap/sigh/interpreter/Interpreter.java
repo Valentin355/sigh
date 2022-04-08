@@ -192,7 +192,7 @@ public final class Interpreter
                 return  leftType.isPrimitive() ? !left.equals(right) : left != right;
         }
         //Array operation
-        boolean IsArrayOperation = leftType instanceof ArrayType && rightType instanceof ArrayType && leftType.equals(rightType);
+        boolean IsArrayOperation = leftType instanceof ArrayType && rightType instanceof ArrayType;
         if (IsArrayOperation){
             Object [] result = new Object[((Object[]) left).length];
             arrayOp(node, (Object[]) left, (Object[]) right, result);
