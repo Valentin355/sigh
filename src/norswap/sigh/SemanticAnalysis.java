@@ -118,6 +118,7 @@ public final class SemanticAnalysis
         walker.register(ArrayLiteralNode.class,         PRE_VISIT,  analysis::arrayLiteral);
         walker.register(ParenthesizedNode.class,        PRE_VISIT,  analysis::parenthesized);
         walker.register(FieldAccessNode.class,          PRE_VISIT,  analysis::fieldAccess);
+        walker.register(ArraySelectionNode.class,       PRE_VISIT,  analysis::arraySelection);
         walker.register(ArrayAccessNode.class,          PRE_VISIT,  analysis::arrayAccess);
         walker.register(FunCallNode.class,              PRE_VISIT,  analysis::funCall);
         walker.register(UnaryExpressionNode.class,      PRE_VISIT,  analysis::unaryExpression);
@@ -171,6 +172,12 @@ public final class SemanticAnalysis
 
     private void stringLiteral (StringLiteralNode node) {
         R.set(node, "type", StringType.INSTANCE);
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    private void arraySelection (ArraySelectionNode node){
+        R.set(node, "type", SelectionType.INSTANCE);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -368,23 +375,40 @@ public final class SemanticAnalysis
         });
     }
 
+
+    //----------------------------------------------------------------------------------------------
+
+
+
+
+
+
     // ---------------------------------------------------------------------------------------------
 
     private void arrayAccess (ArrayAccessNode node)
     {
+
+        Attribute[] dependencies = new Attribute[2];
+        dependencies[0] = node.array.attr("type");
+        dependencies[1] = node.index.attr("type");
+
+
         R.rule()
         .using(node.index, "type")
         .by(r -> {
             Type type = r.get(0);
-            if (!(type instanceof IntType))
+            if (!(type instanceof IntType) && !(type instanceof SelectionType))
                 r.error("Indexing an array using a non-Int-valued expression", node.index);
         });
 
         R.rule(node, "type")
-        .using(node.array, "type")
+        .using(dependencies)
         .by(r -> {
             Type type = r.get(0);
-            if (type instanceof ArrayType)
+            Type indexType = r.get(1);
+            if (indexType instanceof SelectionType)
+                r.set(0, new ArrayType(((ArrayType) type).componentType));
+            else if (type instanceof ArrayType)
                 r.set(0, ((ArrayType) type).componentType);
             else
                 r.error("Trying to index a non-array expression of type " + type, node);

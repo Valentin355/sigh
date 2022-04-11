@@ -373,7 +373,34 @@ public final class Interpreter
     private Object arrayAccess (ArrayAccessNode node)
     {
         Object[] array = getNonNullArray(node.array);
+
+
         try {
+
+            //If selection part of array
+            if (node.index instanceof ArraySelectionNode){
+                int arrayLength = array.length;
+                IntLiteralNode start = (IntLiteralNode) ((ArraySelectionNode) node.index).start;
+                IntLiteralNode end = (IntLiteralNode) ((ArraySelectionNode) node.index).end;
+                long finalLength;
+                if (start == null && end == null){
+                    return array;
+                } else if (start == null){
+                    finalLength = end.value;
+                } else if (end == null){
+                    finalLength = arrayLength - start.value;
+                }else {
+                    finalLength = end.value - start.value;
+                }
+                Object[] returnArray = new Object[(int) finalLength];
+
+                if (start == null){
+                    for (int i = 0; i < finalLength; i++) returnArray[i] = array[i];
+                } else {
+                    for (int i = 0; i < finalLength; i++) returnArray[i] = array[i + (int) start.value];
+                }
+                return returnArray;
+            }
             return array[getIndex(node.index)];
         } catch (ArrayIndexOutOfBoundsException e) {
             throw new PassthroughException(e);
