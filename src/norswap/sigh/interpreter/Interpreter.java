@@ -6,11 +6,7 @@ import norswap.sigh.scopes.DeclarationKind;
 import norswap.sigh.scopes.RootScope;
 import norswap.sigh.scopes.Scope;
 import norswap.sigh.scopes.SyntheticDeclarationNode;
-import norswap.sigh.types.ArrayType;
-import norswap.sigh.types.FloatType;
-import norswap.sigh.types.IntType;
-import norswap.sigh.types.StringType;
-import norswap.sigh.types.Type;
+import norswap.sigh.types.*;
 import norswap.uranium.Reactor;
 import norswap.utils.Util;
 import norswap.utils.exceptions.Exceptions;
@@ -198,8 +194,48 @@ public final class Interpreter
             arrayOp(node, (Object[]) left, (Object[]) right, result);
             return result;
         }
+
+        //Map operation
+        boolean isMap = leftType instanceof ArrayType && rightType instanceof FunType;
+        if (isMap){
+            return mapping(node, left, (FunDeclarationNode) right);
+        }
+
+
         throw new Error("should not reach here");
     }
+
+    //----------------------------------------------------------------------------------------------
+    //Map operation
+
+    private Object recursiveMap(Object array, FunDeclarationNode right){
+        Object[] list = (Object[]) array;
+        Object[] toReturn = new Object[list.length];
+        if (list[0] instanceof Object[]){
+            for (int i = 0; i < list.length; i++) toReturn[i] = recursiveMap(list[i], right);
+        } else{
+            for (int i = 0; i < list.length; i++) {
+                //Should execute function here
+                     if (list[i] instanceof Long){
+                         //return funCall();
+                     }
+
+
+                }
+
+
+
+
+        }
+        return toReturn;
+    }
+
+    private Object mapping(BinaryExpressionNode node, Object left, FunDeclarationNode right){
+
+        return recursiveMap(left, right);
+    }
+
+
 
     // ---------------------------------------------------------------------------------------------
     //Need to sum Array Here

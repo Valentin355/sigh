@@ -157,10 +157,13 @@ public class SighGrammar extends Grammar
         .prefix(BANG.as_val(NOT),
             $ -> new UnaryExpressionNode($.span(), $.$[0], $.$[1]));
 
+    //Adding map as same level as mult_op
     public rule mult_op = choice(
         STAR        .as_val(BinaryOperator.MULTIPLY),
         SLASH       .as_val(BinaryOperator.DIVIDE),
-        PERCENT     .as_val(BinaryOperator.REMAINDER));
+        PERCENT     .as_val(BinaryOperator.REMAINDER),
+        DOLLAR      .as_val(BinaryOperator.DOLLAR)
+    );
 
     public rule add_op = choice(
         PLUS        .as_val(BinaryOperator.ADD),

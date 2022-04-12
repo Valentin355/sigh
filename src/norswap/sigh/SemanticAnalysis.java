@@ -502,8 +502,37 @@ public final class SemanticAnalysis
                 binaryLogic(r, node, left, right);
             else if (isEquality(node.operator))
                 binaryEquality(r, node, left, right);
+            else if (node.operator == DOLLAR && (left instanceof ArrayType) && (right instanceof FunType))
+                map(r, node, (ArrayType) left, (FunType) right);
         });
     }
+
+    //----------------------------------------------------------------------------------------------
+
+    private void map(Rule r, BinaryExpressionNode node, ArrayType left, FunType right){
+        //Check if only one parameter in function
+        if (right.paramTypes.length != 1){
+            //Need to put some error here
+            r.error(format("Function need only one parameter during map, function receive %d", right.paramTypes.length), node);
+            return;
+        }
+        //Check type of function and array to see if error
+        Type baseType = left;
+        int dim = 0;
+        while (baseType instanceof ArrayType){
+            dim++;
+            baseType = ((ArrayType) baseType).componentType;
+        }
+
+        if (!(right.paramTypes[0].getClass().equals(baseType.getClass()))){
+            r.error(format("Function use parameter of class %s, but basetype of array is %s", right.paramTypes[0].name(), baseType.name()), node);
+            return;
+        }
+
+        r.set(node, "type", arrayOfType(right.returnType, dim));
+
+    }
+
 
     // ---------------------------------------------------------------------------------------------
 
