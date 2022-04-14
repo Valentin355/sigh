@@ -12,8 +12,10 @@ import norswap.utils.Util;
 import norswap.utils.exceptions.Exceptions;
 import norswap.utils.exceptions.NoStackException;
 import norswap.utils.visitors.ValuedVisitor;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static norswap.utils.Util.cast;
@@ -198,7 +200,7 @@ public final class Interpreter
         //Map operation
         boolean isMap = leftType instanceof ArrayType && rightType instanceof FunType;
         if (isMap){
-            return mapping(node, left, (FunDeclarationNode) right);
+            return mapping(node, left, (FunDeclarationNode) right, ((FunType) rightType).paramTypes[0]);
         }
 
 
@@ -208,31 +210,32 @@ public final class Interpreter
     //----------------------------------------------------------------------------------------------
     //Map operation
 
-    private Object recursiveMap(Object array, FunDeclarationNode right){
+    private Object recursiveMap(BinaryExpressionNode node, Object array, FunDeclarationNode right, Type paramType){
         Object[] list = (Object[]) array;
         Object[] toReturn = new Object[list.length];
         if (list[0] instanceof Object[]){
-            for (int i = 0; i < list.length; i++) toReturn[i] = recursiveMap(list[i], right);
+            for (int i = 0; i < list.length; i++) toReturn[i] = recursiveMap(node, list[i], right, paramType);
         } else{
             for (int i = 0; i < list.length; i++) {
-                //Should execute function here
-                     if (list[i] instanceof Long){
-                         //return funCall();
-                     }
+                //Check type of to create right funCall
+                if (paramType instanceof IntType){
+                    toReturn[i] = funCall(new FunCallNode(right.span, node.right, Arrays.asList(new IntLiteralNode[]{new IntLiteralNode(node.left.span, ((Long) list[i]).intValue())})));
+                } else if (paramType instanceof StringType){
+                    toReturn[i] = funCall(new FunCallNode(right.span, node.right, Arrays.asList(new StringLiteralNode[]{new StringLiteralNode(node.left.span, (String) list[i])})));
+                } else if (paramType instanceof FloatType){
+                    toReturn[i] = funCall(new FunCallNode(right.span, node.right, Arrays.asList(new FloatLiteralNode[]{new FloatLiteralNode(node.left.span, ((Double) list[i]).floatValue())})));
+                } //Maybe check for BoolType
 
 
-                }
-
-
-
+            }
 
         }
         return toReturn;
     }
 
-    private Object mapping(BinaryExpressionNode node, Object left, FunDeclarationNode right){
+    private Object mapping(BinaryExpressionNode node, Object left, FunDeclarationNode right, Type paramType){
 
-        return recursiveMap(left, right);
+        return recursiveMap(node, left, right, paramType);
     }
 
 
