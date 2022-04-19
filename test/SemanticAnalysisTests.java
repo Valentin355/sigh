@@ -97,8 +97,6 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
 
         failureInputWith("return 2 + true", "Trying to add Int with Bool");
         failureInputWith("return true + 2", "Trying to add Bool with Int");
-        failureInputWith("return 2 + [1]", "Trying to add Int with Int[]");
-        failureInputWith("return [1] + 2", "Trying to add Int[] with Int");
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -328,9 +326,6 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
 
         failureInputWith("var intArray: Int[][] = [[1,2], [3,4]]\n" +
             "var sumArray: Int[][] = intArray + [4, 4]", "Trying to add Int[][] with Int[]");
-
-
-
     }
     // ---------------------------------------------------------------------------------------------
 

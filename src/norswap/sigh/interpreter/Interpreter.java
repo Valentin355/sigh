@@ -172,7 +172,7 @@ public final class Interpreter
         Object left  = get(node.left);
         Object right = get(node.right);
 
-        if (node.operator == BinaryOperator.ADD
+        if (node.operator == BinaryOperator.ADD && !(leftType instanceof ArrayType)
                 && (leftType instanceof StringType || rightType instanceof StringType))
             return convertToString(left) + convertToString(right);
 
@@ -182,6 +182,9 @@ public final class Interpreter
         if (numeric)
             return numericOp(node, floating, (Number) left, (Number) right);
 
+        else if((node.operator != BinaryOperator.DOLLAR) && (leftType instanceof ArrayType) && !(rightType instanceof ArrayType)){
+            return recursiveMapOp(node, left, rightType);
+        }
 
         switch (node.operator) {
             case EQUALITY:
@@ -208,6 +211,30 @@ public final class Interpreter
     }
 
     //----------------------------------------------------------------------------------------------
+    //Map basic operators
+    private Object recursiveMapOp(BinaryExpressionNode node, Object array, Type right){
+        Object[] list = (Object[]) array;
+        Object[] toReturn = new Object[list.length];
+
+        if (list[0] instanceof Object[]) {
+            for (int i = 0; i < list.length; i++)
+                toReturn[i] = recursiveMapOp(node, list[i], right);
+        } else {
+            for (int i = 0; i < list.length; i++){
+                boolean floating = list[i] instanceof Double || right instanceof FloatType;
+                boolean numeric  = floating || list[i] instanceof Long;
+                //If number in, call numericOp and store it in result
+                if (numeric){
+                    toReturn[i] = numericOp(node, floating, (Number) list[i], (Number) get(node.right));
+                } else if (node.operator == BinaryOperator.ADD
+                    && (list[i] instanceof String || right instanceof StringType)){
+                    toReturn[i] = (String) (list[i]) + (String) (get(node.right));
+                }
+            }
+        }
+        return toReturn;
+    }
+
     //Map operation
 
     private Object recursiveMap(BinaryExpressionNode node, Object array, FunDeclarationNode right, Type paramType){
@@ -225,10 +252,7 @@ public final class Interpreter
                 } else if (paramType instanceof FloatType){
                     toReturn[i] = funCall(new FunCallNode(right.span, node.right, Arrays.asList(new FloatLiteralNode[]{new FloatLiteralNode(node.left.span, ((Double) list[i]).floatValue())})));
                 } //Maybe check for BoolType
-
-
             }
-
         }
         return toReturn;
     }

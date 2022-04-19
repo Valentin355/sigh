@@ -207,7 +207,8 @@ public class BytecodeTests
 
     // ---------------------------------------------------------------------------------------------
 
-    @Test public void testArrays() {
+    @org.junit.Test
+    public void testArrays() {
         checkExpr("[1, 2, 3]", "[1, 2, 3]");
         checkExpr("[\"a\", \"b\", \"c\"]", "[a, b, c]");
         checkExpr("[1.0, 2.0]", "[1.0, 2.0]");

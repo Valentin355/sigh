@@ -492,8 +492,17 @@ public final class SemanticAnalysis
             Type left  = r.get(0);
             Type right = r.get(1);
 
-            if (node.operator == ADD && (left instanceof StringType || right instanceof StringType))
+            Type baseType = left;
+            int dim = 0;
+            while (baseType instanceof ArrayType){
+                dim++;
+                baseType = ((ArrayType) baseType).componentType;
+            }
+
+            if (node.operator == ADD && !(left instanceof ArrayType) && ((left instanceof StringType) || right instanceof StringType))
                 r.set(0, StringType.INSTANCE);
+            else if(isArithmetic((node.operator)) && (left instanceof ArrayType) && !(right instanceof ArrayType))
+                mapBinary(r, node, (ArrayType) left, right, baseType, dim);
             else if (isArithmetic(node.operator))
                 binaryArithmetic(r, node, left, right);
             else if (isComparison(node.operator))
@@ -508,6 +517,24 @@ public final class SemanticAnalysis
     }
 
     //----------------------------------------------------------------------------------------------
+    private void mapBinary(Rule r, BinaryExpressionNode node, ArrayType left, Type right, Type baseType, int dim){
+
+        if (baseType instanceof IntType)
+            if (right instanceof IntType)
+                r.set(0, arrayOfType(IntType.INSTANCE, dim));
+            else if (right instanceof FloatType)
+                r.set(0, arrayOfType(FloatType.INSTANCE, dim));
+            else
+                r.error(arithmeticError(node, "Int", right), node);
+        else if (baseType instanceof FloatType)
+            if (right instanceof IntType || right instanceof FloatType)
+                r.set(0, arrayOfType(FloatType.INSTANCE, dim));
+            else
+                r.error(arithmeticError(node, "Float", right), node);
+        else if (baseType instanceof StringType)
+            if (right instanceof StringType)
+                r.set(0, arrayOfType(StringType.INSTANCE, dim));
+    }
 
     private void map(Rule r, BinaryExpressionNode node, ArrayType left, FunType right){
         //Check if only one parameter in function

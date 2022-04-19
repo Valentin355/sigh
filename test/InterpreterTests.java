@@ -376,6 +376,21 @@ public final class InterpreterTests extends TestFixture {
         */
 
     }
+    @Test public void testMapBasicOp(){
+        rule = grammar.root;
+        check("var intArray: Int[][] = [[1,2],[3,4]]\n" +
+            "var mapArray: Int[][] = intArray*2\n" +
+            "print(\"\" + mapArray)",null, "[[2, 4], [6, 8]]\n");
+        check("var intArray: Int[][] = [[1,2],[3,4]]\n" +
+            "var mapArray: Int[][] = intArray+3+4\n" +
+            "print(\"\" + mapArray)",null, "[[8, 9], [10, 11]]\n");
+        check("var floatArray: Float[][] = [[1.0,2.0],[3.0,4.0]]\n" +
+            "var mapArray: Float[][] = floatArray+3+4\n" +
+            "print(\"\" + mapArray)\n", null, "[[8.0, 9.0], [10.0, 11.0]]\n");
+        check("var stringArray: String[][]= [[\"salut\",\"cest\"], [\"cool\"]]\n" +
+            "var mapStringArray: String[][] = stringArray + \"oui\"\n" +
+            "print(\"\" + mapStringArray)", null, "[[salutoui, cestoui], [cooloui]]\n");
+    }
 
 
     // NOTE(norswap): Not incredibly complete, but should cover the basics.

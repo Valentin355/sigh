@@ -67,6 +67,7 @@ dependencies {
     implementation("com.norswap:autumn:1.2.0")
     implementation("com.norswap:uranium:1.0.9-ALPHA")
     implementation("org.ow2.asm:asm-all:5.2")
+    implementation("junit:junit:4.13.1")
     testImplementation("org.testng:testng:6.14.3")
 }
 

@@ -59,15 +59,14 @@ fun sum_pair (pair: Pair): Int {
 validate5(sum_pair($Pair(2, 3)))
 
 fun use_array (array: Int[]) {}
+
+
+var floatArray: Float[][] = [[1.0,2.0],[3.0,4.0]]
+var mapArray: Float[][] = floatArray+3+4
 */
-
-fun mult_2 (a: Int): String {
-    return "a"
-}
-
-var intArray: Int[][] = [[1,2],[3,4]]
-var intPart: String[][] = intArray $ mult_2
-print("" + intPart)
+var stringArray: String[][]= [["salut","cest"], ["cool"]]
+var mapStringArray: String[][] = stringArray + "oui"
+print("" + mapStringArray)
 
 
 //var stringArray: String[] = []
