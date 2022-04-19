@@ -329,4 +329,52 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
     }
     // ---------------------------------------------------------------------------------------------
 
+    @Test public void ArraySelection(){
+        successInput("var floatArray: Int[][] = [[1,2, 3, 4, 5],[6,7]]\n" +
+            "var selectedArray: Int[][] = floatArray[:][0:1]\n" +
+            "print(\"\" + selectedArray)");
+
+        successInput("var floatArray: Int[][] = [[1,2, 3, 4, 5],[6,7]]\n" +
+            "var selectedArray: Int[][] = floatArray[1:][0:1]\n" +
+            "print(\"\" + selectedArray)");
+
+        successInput("var floatArray: Int[] = [0,1,2,3,4,5,6,7,8,9]\n" +
+            "var selectedArray: Int[]= floatArray[1:5]\n" +
+            "print(\"\" + selectedArray)");
+
+        successInput("var floatArray: Int[][][] = [[[1],[2],[3]],[[4],[5],[6]],[[7],[8],[9]]]\n" +
+            "var selectedArray: Int[][][]= floatArray[:][1:]\n" +
+            "print(\"\" + selectedArray)");
+
+    }
+
+
+    @Test public void mapFunction(){
+
+
+        successInput("fun square (a: Int): Int {\n" +
+            "    return a*a\n" +
+            "}\n" +
+            "var intArray: Int[][][] = [[[1],[2],[3]],[[4],[5],[6]],[[7],[8],[9]]]\n" +
+            "var mappedArray: Int[][][]= intArray$square\n" +
+            "print(\"\" + mappedArray)");
+
+
+        successInput("fun intToA (a: Int): String {\n" +
+            "    return \"A\"\n" +
+            "}\n" +
+            "var floatArray: Int[][][] = [[[1],[2],[3]],[[4],[5],[6]],[[7],[8],[9]]]\n" +
+            "var mappedArray: String[][][]= floatArray$intToA\n" +
+            "print(\"\" + mappedArray)");
+
+
+        failureInputWith("fun intToA (a: Float): String {\n" +
+            "    return \"A\"\n" +
+            "}\n" +
+            "var floatArray: Int[][][] = [[[1],[2],[3]],[[4],[5],[6]],[[7],[8],[9]]]\n" +
+            "var mappedArray: String[][][]= floatArray$intToA\n" +
+            "print(\"\" + mappedArray)", "Function use parameter of class Float, but basetype of array is Int");
+
+    }
+
 }

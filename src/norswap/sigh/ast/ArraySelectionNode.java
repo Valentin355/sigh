@@ -5,13 +5,13 @@ import norswap.utils.Util;
 
 public class ArraySelectionNode extends ExpressionNode {
 
-    public final ExpressionNode start;
-    public final ExpressionNode end;
+    public ExpressionNode start = null;
+    public ExpressionNode end =null;
 
     public ArraySelectionNode (Span span, Object start, Object end) {
         super(span);
-        this.start = Util.cast(start, ExpressionNode.class);
-        this.end = Util.cast(end, ExpressionNode.class);
+        if (start != null) this.start = Util.cast(start, ExpressionNode.class);
+        if (end != null) this.end = Util.cast(end, ExpressionNode.class);
     }
 
 

@@ -393,5 +393,45 @@ public final class InterpreterTests extends TestFixture {
     }
 
 
+    @Test public void arraySelection(){
+        rule = grammar.root;
+        check("var floatArray: Int[][] = [[1,2, 3, 4, 5],[6,7]]\n" +
+            "var selectedArray: Int[][] = floatArray[:][0:1]\n" +
+            "print(\"\" + selectedArray)", null, "[[1], [6]]\n");
+
+        check("var floatArray: Int[][] = [[1,2, 3, 4, 5],[6,7]]\n" +
+            "var selectedArray: Int[][] = floatArray[1:][0:1]\n" +
+            "print(\"\" + selectedArray)", null, "[[6]]\n");
+
+        check("var floatArray: Int[] = [0,1,2,3,4,5,6,7,8,9]\n" +
+            "var selectedArray: Int[]= floatArray[1:5]\n" +
+            "print(\"\" + selectedArray)", null, "[1, 2, 3, 4]\n");
+
+        check("var floatArray: Int[][][] = [[[1],[2],[3]],[[4],[5],[6]],[[7],[8],[9]]]\n" +
+            "var selectedArray: Int[][][]= floatArray[:][1:]\n" +
+            "print(\"\" + selectedArray)", null, "[[[2], [3]], [[5], [6]], [[8], [9]]]\n");
+
+
+    }
+
+
+    @Test public void mapFunction(){
+        check("fun square (a: Int): Int {\n" +
+            "    return a*a\n" +
+            "}\n" +
+            "var intArray: Int[][][] = [[[1],[2],[3]],[[4],[5],[6]],[[7],[8],[9]]]\n" +
+            "var mappedArray: Int[][][]= intArray$square\n" +
+            "print(\"\" + mappedArray)", null, "[[[1], [4], [9]], [[16], [25], [36]], [[49], [64], [81]]]\n");
+
+        check("fun intToA (a: Int): String {\n" +
+            "    return \"A\"\n" +
+            "}\n" +
+            "var floatArray: Int[][][] = [[[1],[2],[3]],[[4],[5],[6]],[[7],[8],[9]]]\n" +
+            "var mappedArray: String[][][]= floatArray$intToA\n" +
+            "print(\"\" + mappedArray)", null, "[[[A], [A], [A]], [[A], [A], [A]], [[A], [A], [A]]]\n");
+
+    }
+
+
     // NOTE(norswap): Not incredibly complete, but should cover the basics.
 }
