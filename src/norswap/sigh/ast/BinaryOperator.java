@@ -15,7 +15,8 @@ public enum BinaryOperator
     LOWER_EQUAL("<="),
     AND("&&"),
     OR("||"),
-    DOLLAR("$");
+    DOLLAR("$"),
+    FOLD(":=");
 
     public final String string;
 

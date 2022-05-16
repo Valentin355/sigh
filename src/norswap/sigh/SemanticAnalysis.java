@@ -513,6 +513,9 @@ public final class SemanticAnalysis
                 binaryEquality(r, node, left, right);
             else if (node.operator == DOLLAR && (left instanceof ArrayType) && (right instanceof FunType))
                 map(r, node, (ArrayType) left, (FunType) right);
+            else if (isFold(node, left, right))
+                r.set(0, ((ArrayType) left).componentType);
+
         });
     }
 
@@ -577,6 +580,13 @@ public final class SemanticAnalysis
 
     private boolean isEquality (BinaryOperator op) {
         return op == EQUALITY || op == NOT_EQUALS;
+    }
+
+    private boolean isFold(BinaryExpressionNode node, Type left, Type right){
+        return node.operator == FOLD && (left instanceof ArrayType) && (right instanceof FunType)
+            && ((ArrayType) left).componentType.equals(((FunType) right).returnType)
+            && ((FunType) right).paramTypes.length == 2
+            && ((FunType) right).paramTypes[0].equals(((FunType) right).paramTypes[1]);
     }
 
     // ---------------------------------------------------------------------------------------------

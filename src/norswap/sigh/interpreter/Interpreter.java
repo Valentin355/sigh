@@ -12,12 +12,11 @@ import norswap.utils.Util;
 import norswap.utils.exceptions.Exceptions;
 import norswap.utils.exceptions.NoStackException;
 import norswap.utils.visitors.ValuedVisitor;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import static norswap.sigh.ast.BinaryOperator.FOLD;
 import static norswap.utils.Util.cast;
 import static norswap.utils.Vanilla.coIterate;
 import static norswap.utils.Vanilla.map;
@@ -182,7 +181,7 @@ public final class Interpreter
         if (numeric)
             return numericOp(node, floating, (Number) left, (Number) right);
 
-        else if((node.operator != BinaryOperator.DOLLAR) && (leftType instanceof ArrayType) && !(rightType instanceof ArrayType)){
+        else if((node.operator != BinaryOperator.DOLLAR)  && ((node.operator != BinaryOperator.FOLD)) && (leftType instanceof ArrayType) && !(rightType instanceof ArrayType)){
             return recursiveMapOp(node, left, rightType);
         }
 
@@ -201,9 +200,21 @@ public final class Interpreter
         }
 
         //Map operation
-        boolean isMap = leftType instanceof ArrayType && rightType instanceof FunType;
+        boolean isMap = node.operator == BinaryOperator.DOLLAR && leftType instanceof ArrayType && rightType instanceof FunType;
         if (isMap){
             return mapping(node, left, (FunDeclarationNode) right, ((FunType) rightType).paramTypes[0]);
+        }
+
+        //Fold operation
+        boolean isFold = node.operator == FOLD && (leftType instanceof ArrayType) && (rightType instanceof FunType)
+            && ((ArrayType) leftType).componentType.equals(((FunType) rightType).returnType)
+            && ((FunType) rightType).paramTypes.length == 2
+            && ((FunType) rightType).paramTypes[0].equals(((FunType) rightType).paramTypes[1]);
+
+        if (isFold){
+            if (!(left instanceof Object[])) return left;
+            if (left instanceof Object[] && ((Object[]) left).length == 1) return left;
+            return fold(node, (ArrayType) leftType,(Object[]) left, (FunDeclarationNode) right);
         }
 
 
@@ -211,6 +222,40 @@ public final class Interpreter
     }
 
     //----------------------------------------------------------------------------------------------
+
+    //Replace base type to ExpressionNode
+    private Object[] replaceToNode(Object[] array, BinaryExpressionNode node){
+        for (int i = 0; i < array.length; i++){
+            if (array[i] instanceof Object[])
+                array[i] = replaceToNode((Object[]) array[i], node);
+            else if (array[i] instanceof Long)
+                array[i] = new IntLiteralNode(node.left.span, (Long) array[i]);
+            else if (array[i] instanceof String)
+                array[i] = new StringLiteralNode(node.left.span, (String) array[i]);
+            else if (array[i] instanceof Double)
+                array[i] = new FloatLiteralNode(node.left.span, (Double) array[i]);
+        }
+        return array;
+    }
+
+
+
+
+    //Fold operation
+    private Object fold(BinaryExpressionNode node, ArrayType leftType, Object[] array, FunDeclarationNode right){
+        int arrayLength = array.length;
+        //Replace all values to type node
+        array = replaceToNode(array, node);
+        Object[] toReturn = (Object[]) funCall(new FunCallNode(right.span, node.right, Arrays.asList(new ArrayLiteralNode[]{new ArrayLiteralNode(node.left.span, Arrays.asList((Object[])(array[0]))), new ArrayLiteralNode(node.left.span, Arrays.asList((Object[]) (array[1])))})));
+        for (int i = 2; i < arrayLength; i++){
+            toReturn = replaceToNode(toReturn, node);
+            toReturn = (Object[]) funCall(new FunCallNode(right.span, node.right, Arrays.asList(new ArrayLiteralNode[]{new ArrayLiteralNode(node.left.span, Arrays.asList(toReturn)), new ArrayLiteralNode(node.left.span, Arrays.asList((Object[]) (array[i])))})));
+        }
+
+        return toReturn;
+    }
+
+
     //Map basic operators
     private Object recursiveMapOp(BinaryExpressionNode node, Object array, Type right){
         Object[] list = (Object[]) array;

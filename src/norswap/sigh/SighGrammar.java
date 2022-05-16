@@ -52,6 +52,8 @@ public class SighGrammar extends Grammar
     public rule DOLLAR          = word("$");
     public rule COMMA           = word(",");
 
+    public rule FOLD            = word(":=");
+
     public rule _var            = reserved("var");
     public rule _fun            = reserved("fun");
     public rule _struct         = reserved("struct");
@@ -157,12 +159,13 @@ public class SighGrammar extends Grammar
         .prefix(BANG.as_val(NOT),
             $ -> new UnaryExpressionNode($.span(), $.$[0], $.$[1]));
 
-    //Adding map as same level as mult_op
+    //Adding map and fold as same level as mult_op
     public rule mult_op = choice(
         STAR        .as_val(BinaryOperator.MULTIPLY),
         SLASH       .as_val(BinaryOperator.DIVIDE),
         PERCENT     .as_val(BinaryOperator.REMAINDER),
-        DOLLAR      .as_val(BinaryOperator.DOLLAR)
+        DOLLAR      .as_val(BinaryOperator.DOLLAR),
+        FOLD        .as_val(BinaryOperator.FOLD)
     );
 
     public rule add_op = choice(
