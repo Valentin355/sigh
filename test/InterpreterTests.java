@@ -432,5 +432,25 @@ public final class InterpreterTests extends TestFixture {
     }
 
 
+    @Test public void foldFunction(){
+
+        check("fun sum (a1: Int[], a2: Int[]): Int[] {\n" +
+            "    return a1+a2\n" +
+            "}\n" +
+            "\n" +
+            "var intArray: Int[][] = [[1,2], [3,4], [5,6]]\n" +
+            "var foldArray: Int[] = intArray:=sum\n" +
+            "print(\"\" + foldArray)", null, "[9, 12]\n");
+
+        check("fun sum (a1: String[], a2: String[]): String[] {\n" +
+            "    return a1+a2\n" +
+            "}\n" +
+            "\n" +
+            "var stringArray: String[][] = [[\"Hello\",\"This\"], [\" world\",\" is\"], [\" !\",\" a test\"]]\n" +
+            "var foldArray: String[] = stringArray:=sum\n" +
+            "print(\"\" + foldArray)", null, "[Hello world !, This is a test]\n");
+
+    }
+
     // NOTE(norswap): Not incredibly complete, but should cover the basics.
 }

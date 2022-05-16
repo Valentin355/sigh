@@ -351,7 +351,6 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
 
     @Test public void mapFunction(){
 
-
         successInput("fun square (a: Int): Int {\n" +
             "    return a*a\n" +
             "}\n" +
@@ -374,6 +373,28 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
             "var floatArray: Int[][][] = [[[1],[2],[3]],[[4],[5],[6]],[[7],[8],[9]]]\n" +
             "var mappedArray: String[][][]= floatArray$intToA\n" +
             "print(\"\" + mappedArray)", "Function use parameter of class Float, but basetype of array is Int");
+
+    }
+
+    @Test public void foldFunction(){
+
+        successInput("fun sum (a1: Int[], a2: Int[]): Int[] {\n" +
+            "    return a1+a2\n" +
+            "}\n" +
+            "\n" +
+            "var intArray: Int[][] = [[1,2], [3,4], [5,6]]\n" +
+            "var foldArray: Int[] = intArray:=sum\n" +
+            "print(\"\" + foldArray)");
+
+        /*
+        failureInputWith("fun intToA (a: Float): String {\n" +
+            "    return \"A\"\n" +
+            "}\n" +
+            "var floatArray: Int[][][] = [[[1],[2],[3]],[[4],[5],[6]],[[7],[8],[9]]]\n" +
+            "var mappedArray: String[][][]= floatArray$intToA\n" +
+            "print(\"\" + mappedArray)", "Function use parameter of class Float, but basetype of array is Int");
+        */
+
 
     }
 
